@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." name="changeimpactbuild" default="clean">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../SDE8.0_Express/SDE8.0_Express/eclipse"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+
+	   <taskdef resource="net/sf/antcontrib/antlib.xml">
+		        <classpath>
+		            <pathelement location="lib/ant-contrib-0.6.jar"/>
+		        </classpath>
+		 	</taskdef>
+	      <path id="changeimpactbuild.classpath">
+	        <pathelement location="bin"/>
+	        <pathelement location="lib/ant-contrib-0.6.jar"/>
+	    </path>
+	
+       <!-- reading path value from property file and copying the directory to that location-->
+       
+       <property file="baseconfig.properties"/>
+	
+	
+	<property file="${buildconfig}"/>   
+	
+	  <target name="clean">
+	    <delete dir="${changeimpact.builddir}/${changeimpact.webapp}/" />
+	  </target>
+
+
+	  <target name="makedir" >
+	    <mkdir dir="${changeimpact.builddir}" />
+	  	 <mkdir dir="${changeimpact.builddir}/${changeimpact.webapp}" />
+	  </target>
+
+	
+	<target name="copyweb" >
+		
+          <echo>copying from ${changeimpact.copyfrom}/WebContent to ${changeimpact.builddir}/${changeimpact.webapp}</echo>
+              <copy todir="${changeimpact.builddir}/${changeimpact.webapp}">
+                 <fileset dir="${changeimpact.copyfrom}/WebContent"/>
+               </copy>
+             </target>
+	
+                <target name="copyclasses" >
+                  <echo>copying from ${changeimpact.copyfrom}/bin to ${changeimpact.builddir}/${changeimpact.webapp}/WEB-INF/classes</echo>
+                      <copy todir="${changeimpact.builddir}/${changeimpact.webapp}/WEB-INF/classes">
+                         <fileset dir="${changeimpact.copyfrom}/bin"/>
+                       </copy>
+                     </target>
+	
+	
+       
+       <!-- loop through property file-->
+       
+       <target name="looppropertyfile" >
+                     <foreach  target="replacefile" param="theFile">
+                            <fileset dir="${changeimpact.builddir}/${changeimpact.webapp}/WEB-INF/classes" casesensitive="yes">
+                                        <include name="**/*.xml"/>
+                            			<include name="**/*.properties"/>
+       
+                                      </fileset>
+
+                             </foreach>
+                           </target>
+
+                           <target name="replacefile">
+                           	<echo>replacing in ${theFile} </echo>
+                             <replace file="${theFile}" replacefilterfile="${buildconfig}"/>
+                           </target>     
+       
+       
+	  <target name="cleanbackup">
+	  	<delete dir="${changeimpact.copyto}/" />
+	  </target>
+
+
+	  <target name="makedirbackup" >
+	  	<mkdir dir="${changeimpact.copyto}" />
+	  </target>
+	
+	<target name="copybackup" >
+          <echo>copying from ${changeimpact.copyto} to ${changeimpact.copyfrom}</echo>
+              <copy todir="${changeimpact.copyto}">
+                 <fileset dir="${changeimpact.copyfrom}/"/>
+               </copy>
+    </target>
+	
+</project>
+

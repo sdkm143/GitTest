@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="baselineprocess" class="com.cts.changeimpact.process.BaseLineProcess"
+		singleton="false">
+	</bean>
+
+	<bean id="baselineprocessproxy"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="changeimpacttransactionManager" />
+		<property name="proxyTargetClass" value="true" />
+		<property name="target" ref="baselineprocess" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="get*">PROPAGATION_SUPPORTS,readOnly</prop>
+				<prop key="find*">PROPAGATION_SUPPORTS,readOnly</prop>
+				<prop key="is*">PROPAGATION_SUPPORTS,readOnly</prop>
+				<prop key="save*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="edit*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="load*">PROPAGATION_SUPPORTS,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="baselineDao" class="com.cts.changeimpact.dao.BaseLineDAO" singleton="false">
+		<property name="jdbcTemplate">
+			<ref bean="changeimpactjdbcTemplate" />
+		</property>
+	</bean>
+	
+
+	<bean id="changeimpacttransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="changeimpactdatasource" />
+	</bean>
+
+	<bean id="changeimpactjdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+		<constructor-arg>
+			<ref bean="changeimpactdatasource" />
+		</constructor-arg>
+	</bean>
+
+		<bean id="changeimpactdatasource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		destroy-method="close">
+
+		<property name="driverClassName" value="changeimpact.cidriverdb" />
+		<property name="url" value="changeimpact.cijdbc://changeimpact.ciipdbchangeimpact.cinamedb" />
+		<property name="username" value="changeimpact.ciuserdb" />
+		<property name="password" value="changeimpact.cipwddb" />
+
+	</bean>
+	
+	
+
+
+</beans>
+
+
